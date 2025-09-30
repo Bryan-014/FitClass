@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import StyledInput from '@/src/components/StyledInput';
 
 const RegisterScreen = () => {
@@ -19,6 +19,8 @@ const RegisterScreen = () => {
     };
 
     return (
+        <>
+         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.container}>
             <Text style={styles.title}>FITCLASS</Text>
 
@@ -33,6 +35,7 @@ const RegisterScreen = () => {
 
             <Link href="/" style={styles.link}>Já tenho uma conta</Link>
         </View>
+        </>
     );
 };
 
@@ -47,7 +50,7 @@ const styles = StyleSheet.create({
         fontSize: 48,
         color: '#FFF',
         textAlign: 'center',
-        marginBottom: 50,
+        marginBottom: 80,
         fontWeight: '300',
     },
     input: {
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
-        marginTop: 10, // Margem extra para separar do último input
+        marginTop: 25, // Margem extra para separar do último input
     },
     buttonText: {
         color: '#888',

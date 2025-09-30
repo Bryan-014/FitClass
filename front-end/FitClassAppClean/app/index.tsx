@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, Link, Stack } from 'expo-router';
 import StyledInput from '@/src/components/StyledInput';
 import StyledButton from '@/src/components/StyledButton';
 
@@ -29,6 +29,8 @@ const LoginScreen = () => {
   };
 
   return (
+    <>
+     <Stack.Screen options={{ headerShown: false }} />
     <View style={styles.container}>
       <Text style={styles.title}>FITCLASS</Text>
 
@@ -55,6 +57,7 @@ const LoginScreen = () => {
         Recuperar Senha
       </StyledButton>
     </View>
+    </>
   );
 };
 
