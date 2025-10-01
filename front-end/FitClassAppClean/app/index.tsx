@@ -16,16 +16,36 @@ const LoginScreen = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log('Tentativa de Login com:', { email, password });
 
+    try {
+      const response = await fetch("http://10.20.14.217/api_login/login.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (email.toLowerCase() === 'aluno@fitclass.com' && password === '123456') {
+      const data = await response.json();
+      console.log(data);
+
+      if (data.status === "success") {
+        //alert("Login feito! ID: " + data.user_id);
+        router.replace('/home');
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Erro na conexão com a API");
+    }
+    /*if (email.toLowerCase() === 'aluno@fitclass.com' && password === '123456') {
       Alert.alert('Sucesso!', 'Login realizado com sucesso.');
-      router.replace('/home');
     } else {
       Alert.alert('Erro', 'Email ou senha inválidos.');
-    }
+    }*/
   };
 
   return (
