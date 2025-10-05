@@ -1,9 +1,0 @@
-class Agendamento < ApplicationRecord
-
-  belongs_to :aluno, foreign_key: 'aluno_id'
-  belongs_to :sessao_aula, foreign_key: 'sessao_aula_id'
-
-  validates :sessao_aula_id, uniqueness: { scope: :aluno_id, message: "já agendada por este aluno." }
-
-  validates :status, presence: true
-end

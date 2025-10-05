@@ -1,0 +1,5 @@
+application:
+  security:
+jwt:
+secret-key: UMA_CHAVE_SECRETA_MUITO_LONGA_E_COMPLEXA_PARA_ASSINATURA_DE_TOKEN_JWT_FITCLASS
+expiration-in-ms: 3600000
