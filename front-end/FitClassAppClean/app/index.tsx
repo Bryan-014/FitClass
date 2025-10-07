@@ -4,48 +4,49 @@ import {
   Text,
   StyleSheet,
   Alert,
-  Image
+  Image,
+  ActivityIndicator 
 } from 'react-native';
 import { router, Stack } from 'expo-router';
 import StyledInput from '@/src/components/StyledInput';
 import StyledButton from '@/src/components/StyledButton';
 
+
+import { login } from '@/src/services/authService';
+
+
 const LoginScreen = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleLogin = () => { // Removido o "async" pois não estamos usando 'await'
-    console.log('Tentativa de Login com (MODO TESTE):', { email, password });
+  const [loading, setLoading] = useState(false);
 
-    // --- LÓGICA DE TESTE (HARDCODED) ---
-    // Esta verificação é temporária, apenas para testar a navegação.
-    if (email.toLowerCase() === 'aluno@fitclass.com' && password === '123456') {
-      Alert.alert('Sucesso (Modo Teste)!', 'Login realizado com sucesso.');
-      router.replace('/home');
-    } else {
-      Alert.alert('Erro (Modo Teste)', 'Email ou senha inválidos.');
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha o email e a senha.');
+      return;
     }
 
-
-    /* // --- CÓDIGO DA API 
-
+    setLoading(true); 
     try {
-      const response = await fetch("http://10.20.14.217/api_login/login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (data.status === "success") {
-        router.replace('/home');
-      } else {
-        Alert.alert('Erro', data.message);
+
+      const token = await login({ login: email, senha: password });
+
+      if (token) {
+
+        Alert.alert('Sucesso!', 'Login realizado com sucesso.');
+        
+
+        router.replace('/home'); 
       }
+     
     } catch (error) {
-      console.error(error);
-      Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+      console.error("Erro inesperado na tela de login:", error);
+      Alert.alert('Erro', 'Ocorreu um problema ao tentar fazer login.');
+    } finally {
+      setLoading(false); 
     }
-    */
   };
 
   return (
@@ -54,23 +55,36 @@ const LoginScreen = () => {
       <View style={styles.container}>
         <Text style={styles.title}>FITCLASS</Text>
 
-        <StyledInput placeholder="EMAIL" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
-        <StyledInput placeholder="SENHA" value={password} onChangeText={setPassword} secureTextEntry />
+        <StyledInput 
+          placeholder="EMAIL" 
+          value={email} 
+          onChangeText={setEmail} 
+          keyboardType="email-address" 
+          autoCapitalize="none" 
+          editable={!loading} 
+        />
+        <StyledInput 
+          placeholder="SENHA" 
+          value={password} 
+          onChangeText={setPassword} 
+          secureTextEntry 
+          editable={!loading} 
+        />
 
-        <StyledButton variant='primary' onPress={handleLogin}>
-          Login
+        <StyledButton variant='primary' onPress={handleLogin} disabled={loading}>
+          {loading ? <ActivityIndicator color="#FFF" /> : 'Login'}
         </StyledButton>
 
-        <StyledButton variant='secondary' onPress={() => router.push('/register')}>
+        <StyledButton variant='secondary' onPress={() => router.push('/register')} disabled={loading}>
           Registrar-se
         </StyledButton>
 
-        <StyledButton variant='google' onPress={() => Alert.alert('Aviso', 'Funcionalidade ainda não implementada.')}>
+        <StyledButton variant='google' onPress={() => Alert.alert('Aviso', 'Funcionalidade ainda não implementada.')} disabled={loading}>
           <Image source={require('../src/assets/google.png')} style={styles.googleIcon} />
           <Text style={styles.buttonTextGoogle}>Sign in with Google</Text>
         </StyledButton>
 
-        <StyledButton variant="secondary" onPress={() => Alert.alert('Aviso', 'Funcionalidade ainda não implementada.')}>
+        <StyledButton variant="secondary" onPress={() => Alert.alert('Aviso', 'Funcionalidade ainda não implementada.')} disabled={loading}>
           Recuperar Senha
         </StyledButton>
       </View>
