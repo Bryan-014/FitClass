@@ -1,5 +1,7 @@
 package com.fitclass.academia_api.model;
 
+import java.security.Timestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,16 +12,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity 
-@Table(name = "instrutores") 
+@Table(name = "alunos") 
 @Data
 @Getter
 @Setter 
-public class Instrutor {
+public class Aluno {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
     private String nome;
-    private String especialidade; 
+    private Timestamp penalidade; 
     
 }

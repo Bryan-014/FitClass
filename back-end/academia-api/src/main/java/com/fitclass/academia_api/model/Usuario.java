@@ -10,7 +10,6 @@ import lombok.Data;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import lombok.Data;
 
 @Entity
 @Table(name = "usuarios")
