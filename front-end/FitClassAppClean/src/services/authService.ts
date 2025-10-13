@@ -1,4 +1,5 @@
 import api from './api';
+import { saveToken, removeToken } from './tokenService';
 
 interface LoginCredentials {
   login: string;
@@ -14,18 +15,21 @@ interface RegisterCredentials {
 export const login = async (credentials: LoginCredentials): Promise<string | null> => {
   try {
     const response = await api.post<string>('/auth/login', credentials);
-
     const token = response.data;
-    console.log('Login bem-sucedido, token recebido!');
-    return token;
 
+    if (token) {
+      await saveToken(token);
+      console.log('Login bem-sucedido, token salvo!');
+    }
+
+    return token;
   } catch (error) {
     console.error('Falha no login:', error);
     return null;
   }
 };
 
-export const register = async (credentials: RegisterCredentials) => {
+export const register = async (credentials: RegisterCredentials): Promise<any | null> => {
   try {
     const response = await api.post('/auth/register', credentials);
     console.log('Registro bem-sucedido!');
@@ -35,4 +39,4 @@ export const register = async (credentials: RegisterCredentials) => {
     alert('Não foi possível realizar o registro. Verifique os dados ou tente um email diferente.');
     return null;
   }
-}
+};
