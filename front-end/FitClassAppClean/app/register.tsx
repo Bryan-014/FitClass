@@ -1,43 +1,79 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { Link, Stack } from 'expo-router';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Link, Stack, useRouter } from 'expo-router';
 import StyledInput from '@/src/components/StyledInput';
+import { register } from '@/src/services/authService';
 
 const RegisterScreen = () => {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmaSenha, setConfirmaSenha] = useState('');
+    
+    const [loading, setLoading] = useState(false);
 
-    const handleRegister = () => {
+    const router = useRouter(); 
+
+    const handleRegister = async () => {
+        if (!nome || !email || !senha || !confirmaSenha) {
+            Alert.alert('Erro', 'Todos os campos são obrigatórios!');
+            return;
+        }
         if (senha !== confirmaSenha) {
             Alert.alert('Erro', 'As senhas não coincidem!');
             return;
         }
-        console.log({ nome, email, senha });
-        Alert.alert('Sucesso', 'Conta criada com sucesso!');
+
+        setLoading(true); 
+        try {
+            const result = await register({
+                nome: nome,
+                login: email, 
+                senha: senha
+            });
+
+            if (result) {
+                Alert.alert('Sucesso!', 'Conta criada. Agora você pode fazer o login.');
+                router.push('/'); 
+            }
+            
+        } catch (error) {
+            console.error("Erro inesperado no registro:", error);
+        } finally {
+            setLoading(false); 
+        }
     };
 
     return (
         <>
          <Stack.Screen options={{ headerShown: false }} />
-        <View style={styles.container}>
-            <Text style={styles.title}>FITCLASS</Text>
+         <View style={styles.container}>
+             <Text style={styles.title}>FITCLASS</Text>
 
-            <StyledInput placeholder="NOME" value={nome} onChangeText={setNome} />
-            <StyledInput placeholder="EMAIL" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
-            <StyledInput placeholder="SENHA" value={senha} onChangeText={setSenha} secureTextEntry />
-            <StyledInput placeholder="CONFIRMAR SENHA" value={confirmaSenha} onChangeText={setConfirmaSenha} secureTextEntry/>
+             <StyledInput placeholder="NOME" value={nome} onChangeText={setNome} editable={!loading} />
+             <StyledInput placeholder="EMAIL" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" editable={!loading} />
+             <StyledInput placeholder="SENHA" value={senha} onChangeText={setSenha} secureTextEntry editable={!loading} />
+             <StyledInput placeholder="CONFIRMAR SENHA" value={confirmaSenha} onChangeText={setConfirmaSenha} secureTextEntry editable={!loading}/>
 
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Registrar-se</Text>
-            </TouchableOpacity>
+             
+             <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
+                {loading ? (
+                    <ActivityIndicator color="#FFF" />
+                ) : (
+                    <Text style={styles.buttonText}>Registrar-se</Text>
+                )}
+             </TouchableOpacity>
 
-            <Link href="/" style={styles.link}>Já tenho uma conta</Link>
-        </View>
-        </>
+             <Link href="/" asChild>
+                <TouchableOpacity disabled={loading}>
+                    <Text style={styles.link}>Já tenho uma conta</Text>
+                </TouchableOpacity>
+             </Link>
+         </View>
+         </>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -53,30 +89,17 @@ const styles = StyleSheet.create({
         marginBottom: 80,
         fontWeight: '300',
     },
-    input: {
-        backgroundColor: '#3D3D3D',
-        color: '#FFF',
-        borderRadius: 8,
-        padding: 15,
-        marginBottom: 35,
-        fontSize: 16,
-    },
     button: {
-        backgroundColor: '#1E1E1E', // A cor que você queria
+        backgroundColor: '#1E1E1E',
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
-        marginTop: 25, // Margem extra para separar do último input
+        marginTop: 25,
     },
     buttonText: {
         color: '#888',
         fontSize: 16,
         fontWeight: 'bold',
-    },
-    buttonContainer: {
-        marginTop: 15,
-        borderRadius: 8,
-        overflow: 'hidden',
     },
     link: {
         color: '#888',
