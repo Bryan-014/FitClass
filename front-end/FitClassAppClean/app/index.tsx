@@ -1,26 +1,21 @@
+import StyledButton from '@/src/components/StyledButton';
+import StyledInput from '@/src/components/StyledInput';
+import { login } from '@/src/services/authService';
+import { router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
+  ActivityIndicator,
   Alert,
   Image,
-  ActivityIndicator 
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
-import { router, Stack } from 'expo-router';
-import StyledInput from '@/src/components/StyledInput';
-import StyledButton from '@/src/components/StyledButton';
-
-
-import { login } from '@/src/services/authService';
-
 
 const LoginScreen = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-
   const [loading, setLoading] = useState(false);
-
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -28,24 +23,21 @@ const LoginScreen = () => {
       return;
     }
 
-    setLoading(true); 
+    setLoading(true);
     try {
-
       const token = await login({ login: email, senha: password });
 
       if (token) {
-
-        Alert.alert('Sucesso!', 'Login realizado com sucesso.');
-        
-
-        router.replace('/home'); 
+        router.replace('/home');
+      } else {
+        Alert.alert('Falha no Login', 'Usuário ou senha incorretos.');
       }
-     
+
     } catch (error) {
       console.error("Erro inesperado na tela de login:", error);
       Alert.alert('Erro', 'Ocorreu um problema ao tentar fazer login.');
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -55,20 +47,20 @@ const LoginScreen = () => {
       <View style={styles.container}>
         <Text style={styles.title}>FITCLASS</Text>
 
-        <StyledInput 
-          placeholder="EMAIL" 
-          value={email} 
-          onChangeText={setEmail} 
-          keyboardType="email-address" 
-          autoCapitalize="none" 
-          editable={!loading} 
+        <StyledInput
+          placeholder="EMAIL"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          editable={!loading}
         />
-        <StyledInput 
-          placeholder="SENHA" 
-          value={password} 
-          onChangeText={setPassword} 
-          secureTextEntry 
-          editable={!loading} 
+        <StyledInput
+          placeholder="SENHA"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!loading}
         />
 
         <StyledButton variant='primary' onPress={handleLogin} disabled={loading}>

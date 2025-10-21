@@ -4,6 +4,11 @@ export type Aula = {
   id?: number;
   nome: string;
   descricao: string;
+  dataHora: string;
+  duracao: number;
+  capacidade: string;
+  limiteCancelamentoHoras: number;
+  instrutorId: number;
 };
 
 export const getAulas = async (): Promise<Aula[]> => {

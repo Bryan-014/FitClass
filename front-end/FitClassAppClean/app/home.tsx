@@ -1,23 +1,21 @@
-import React, { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  ActivityIndicator,
-  FlatList,
-  Alert,
-} from "react-native";
-import { Stack, router, useFocusEffect } from "expo-router";
 import StyledButton from "@/src/components/StyledButton";
-import {
-  getMeuPerfil,
-  getMinhasProximasAulas,
-  Usuario,
-  Agendamento,
-} from "@/src/services/usuarioService";
 import { removeToken } from "@/src/services/tokenService";
+import {
+  Agendamento,
+  Usuario,
+  getMeuPerfil
+} from "@/src/services/usuarioService";
+import { Stack, router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -29,18 +27,21 @@ const HomeScreen = () => {
       const fetchData = async () => {
         setLoading(true);
         try {
-          const [perfilData, aulasData] = await Promise.all([
-            getMeuPerfil(),
-            getMinhasProximasAulas(),
-          ]);
+          const perfilData = await getMeuPerfil();
           setUsuario(perfilData);
-          setProximasAulas(aulasData);
+
+          // A busca de aulas fica para quando o endpoint existir
+          // const [perfilData, aulasData] = await Promise.all([
+          //   getMeuPerfil(),
+          //   getMinhasProximasAulas(),
+          // ]);
+          // setUsuario(perfilData);
+          // setProximasAulas(aulasData);
+
         } catch (error) {
+          // Este bloco não deve mais ser ativado
           console.error("Erro ao carregar dados da home:", error);
-          Alert.alert(
-            "Erro",
-            "Não foi possível carregar seus dados. Tente novamente."
-          );
+          Alert.alert("Erro", "Não foi possível carregar seus dados.");
         } finally {
           setLoading(false);
         }
@@ -79,39 +80,24 @@ const HomeScreen = () => {
       />
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.welcomeText}>
-          {loading ? "Carregando..." : `Bem-vindo(a), ${usuario?.nome || ""}!`}
+          {loading
+            ? "Testando API..."
+            : `Bem-vindo(a), ${ usuario?.nome || "Usuário" }!`}
         </Text>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Suas Próximas Aulas</Text>
-          {loading ? (
-            <ActivityIndicator color="#FFF" size="large" />
-          ) : (
-            <FlatList
-              data={proximasAulas}
-              renderItem={renderAulaCard}
-              keyExtractor={(item) => item.id.toString()}
-              ListEmptyComponent={
-                <Text style={styles.emptyText}>
-                  Você não tem nenhuma aula agendada.
-                </Text>
-              }
-              scrollEnabled={false}
-            />
-          )}
+          <Text style={styles.sectionTitle}>Resultado do Teste</Text>
+          {loading && <ActivityIndicator color="#FFF" size="large" />}
+          <Text style={styles.emptyText}>
+            Verifique o alerta que apareceu na tela e o console.
+          </Text>
         </View>
 
         {usuario?.role === "ADMIN" && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Gerenciamento</Text>
-            <StyledButton
-              onPress={() => router.push("/aulas")}
-              style={{ marginBottom: 10 }}
-            >
-              Gerenciar Aulas
-            </StyledButton>
-            <StyledButton onPress={() => router.push("/instrutores")}>
-              Gerenciar Instrutores
+            <Text style={styles.sectionTitle}>Painel Administrativo</Text>
+            <StyledButton onPress={() => router.push("/admin/dashboard")}>
+              Acessar Gerenciamento
             </StyledButton>
           </View>
         )}

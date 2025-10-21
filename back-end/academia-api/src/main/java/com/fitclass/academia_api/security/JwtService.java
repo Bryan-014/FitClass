@@ -18,7 +18,7 @@ import java.security.Key;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "BFxpdNB6BA08bdz8utFdKG9yUB4YP7KokA8x25fLmfxNuXY2/CpUwSGxyf+80fmcf2JANDmOEBysAo5NLPi91e04eqnxgbA5437AGsVGcavRq0gLujYOPQHqZ+4dH9QftrqtJ+MDJ8M6FMPRXNFKhKX8/dnu4TZCGriyNabiPP287fjzLQtWfU5drpl5WsFnoPwCknXwSF4opkqszRIEHZiBLVpirFYhXc2lAyMQv0i53kFV0MYcBSter/AxPa5vJTvmI05csJq3SGe7ZjnK456CNSGchPOboVw4wa0y+Us84y6U4cjjSwDf3Ae3CzLjRnroX1K6Xg7LH/0RGxnaZ1IduedFFB6BgA6yhCPE2gs=";
+    private static final String SECRET_KEY = "CGKbR3zEpAX3dh5fWMYQmjIn8GfI7rQzX1xdITCH3oqJUY/pLtPg+lXNlJw/cpDvfpOXKaeiZfdsvCiGH+Tr0yya7LgUMWDGl6RzlrbLz2hbIn30qXFuTvp9r2ZAtE3wC9DkqLYO61x1q3QqN7yTOUV0ptquhHu9R57fS0T49zU=";
 
 
     public String extractUsername(String token) {

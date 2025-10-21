@@ -1,5 +1,6 @@
 package com.fitclass.academia_api.service;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +24,10 @@ public class UsuarioService {
 
 
         return usuarioRepository.save(usuario);
+    }
+
+        public Usuario findByLogin(String login) {
+        return usuarioRepository.findByLogin(login)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o login: " + login));
     }
 }

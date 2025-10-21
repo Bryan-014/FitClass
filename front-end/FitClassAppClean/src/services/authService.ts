@@ -1,5 +1,5 @@
 import api from './api';
-import { saveToken, removeToken } from './tokenService';
+import { saveToken } from './tokenService';
 
 interface LoginCredentials {
   login: string;
@@ -12,31 +12,42 @@ interface RegisterCredentials {
   senha: string;
 }
 
-export const login = async (credentials: LoginCredentials): Promise<string | null> => {
+export const login = async (credentials: LoginCredentials): Promise<string> => {
   try {
-    const response = await api.post<string>('/auth/login', credentials);
-    const token = response.data;
+    console.log('=== ENVIANDO LOGIN ===');
+    console.log('Dados:', credentials);
 
-    if (token) {
-      await saveToken(token);
-      console.log('Login bem-sucedido, token salvo!');
-    }
+    const response = await api.post<{ token: string }>('/auth/login', credentials);
+    const token = response.data.token;
+
+    await saveToken(token);
+    console.log('✓ Login bem-sucedido, token salvo!');
 
     return token;
-  } catch (error) {
-    console.error('Falha no login:', error);
-    return null;
+  } catch (error: any) {
+    console.error('✗ Falha no login:', error);
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Dados do erro:', error.response.data);
+    }
+    throw error;
   }
 };
 
-export const register = async (credentials: RegisterCredentials): Promise<any | null> => {
+export const register = async (credentials: RegisterCredentials): Promise<any> => {
   try {
+    console.log('=== ENVIANDO REGISTRO ===');
+    console.log('Dados:', credentials);
+
     const response = await api.post('/auth/register', credentials);
-    console.log('Registro bem-sucedido!');
+    console.log('✓ Registro bem-sucedido!');
     return response.data;
-  } catch (error) {
-    console.error('Falha no registro:', error);
-    alert('Não foi possível realizar o registro. Verifique os dados ou tente um email diferente.');
-    return null;
+  } catch (error: any) {
+    console.error('✗ Falha no registro:', error);
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Dados do erro:', error.response.data);
+    }
+    throw error;
   }
 };

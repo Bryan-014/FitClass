@@ -1,15 +1,13 @@
 package com.fitclass.academia_api.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -24,10 +22,15 @@ public class Usuario implements UserDetails {
     @Column(unique = true)
     private String login;
     private String senha;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        if (this.role == null) {
+            return List.of(new SimpleGrantedAuthority("ALUNO"));
+        }
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
     }
 
     @Override
