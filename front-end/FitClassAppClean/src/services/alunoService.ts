@@ -12,8 +12,8 @@ export const getAlunos = async (): Promise<Aluno[]> => {
 };
 
 export const getAlunoById = async (id: number): Promise<Aluno> => {
-    const response = await api.get<Aluno>(`/alunos/${id}`);
-    return response.data;
+  const response = await api.get<Aluno>(`/alunos/${ id }`);
+  return response.data;
 };
 
 export const createAluno = async (alunoData: Omit<Aluno, 'id' | 'penalidade'>): Promise<Aluno> => {
@@ -22,10 +22,10 @@ export const createAluno = async (alunoData: Omit<Aluno, 'id' | 'penalidade'>): 
 };
 
 export const updateAluno = async (id: number, alunoData: Omit<Aluno, 'penalidade'>): Promise<Aluno> => {
-    const response = await api.put<Aluno>(`/alunos/${id}`, alunoData);
-    return response.data;
+  const response = await api.put<Aluno>(`/alunos/${ id }`, alunoData);
+  return response.data;
 };
 
 export const deleteAluno = async (id: number): Promise<void> => {
-    await api.delete(`/alunos/${id}`);
+  await api.delete(`/alunos/${ id }`);
 };

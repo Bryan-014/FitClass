@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Link, Stack, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import StyledInput from '@/src/components/StyledInput';
+import StyledButton from '@/src/components/StyledButton';
 import { register } from '@/src/services/authService';
+import { Ionicons } from '@expo/vector-icons';
 
 const RegisterScreen = () => {
     const [nome, setNome] = useState('');
@@ -11,7 +13,6 @@ const RegisterScreen = () => {
     const [confirmaSenha, setConfirmaSenha] = useState('');
     
     const [loading, setLoading] = useState(false);
-
     const router = useRouter(); 
 
     const handleRegister = async () => {
@@ -26,17 +27,11 @@ const RegisterScreen = () => {
 
         setLoading(true); 
         try {
-            const result = await register({
-                nome: nome,
-                login: email, 
-                senha: senha
-            });
-
+            const result = await register({ nome, login: email, senha });
             if (result) {
                 Alert.alert('Sucesso!', 'Conta criada. Agora você pode fazer o login.');
                 router.push('/'); 
             }
-            
         } catch (error) {
             console.error("Erro inesperado no registro:", error);
         } finally {
@@ -46,66 +41,78 @@ const RegisterScreen = () => {
 
     return (
         <>
-         <Stack.Screen options={{ headerShown: false }} />
-         <View style={styles.container}>
-             <Text style={styles.title}>FITCLASS</Text>
+            <Stack.Screen options={{ headerShown: false }} />
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.headerContainer}>
+                    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="white" />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>Criar Conta</Text>
+                </View>
+                
+                <View style={styles.formContainer}>
+                    <StyledInput placeholder="NOME COMPLETO" value={nome} onChangeText={setNome} editable={!loading} />
+                    <StyledInput placeholder="EMAIL" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" editable={!loading} />
+                    <StyledInput placeholder="SENHA" value={senha} onChangeText={setSenha} secureTextEntry editable={!loading} />
+                    <StyledInput placeholder="CONFIRMAR SENHA" value={confirmaSenha} onChangeText={setConfirmaSenha} secureTextEntry editable={!loading}/>
+                </View>
 
-             <StyledInput placeholder="NOME" value={nome} onChangeText={setNome} editable={!loading} />
-             <StyledInput placeholder="EMAIL" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" editable={!loading} />
-             <StyledInput placeholder="SENHA" value={senha} onChangeText={setSenha} secureTextEntry editable={!loading} />
-             <StyledInput placeholder="CONFIRMAR SENHA" value={confirmaSenha} onChangeText={setConfirmaSenha} secureTextEntry editable={!loading}/>
+                <View style={styles.actionsContainer}>
+                    <StyledButton variant="primary" onPress={handleRegister} disabled={loading} style={styles.registerButton}>
+                        {loading ? <ActivityIndicator color="#FFF" /> : 'Finalizar Cadastro'}
+                    </StyledButton>
 
-             
-             <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-                {loading ? (
-                    <ActivityIndicator color="#FFF" />
-                ) : (
-                    <Text style={styles.buttonText}>Registrar-se</Text>
-                )}
-             </TouchableOpacity>
-
-             <Link href="/" asChild>
-                <TouchableOpacity disabled={loading}>
-                    <Text style={styles.link}>Já tenho uma conta</Text>
-                </TouchableOpacity>
-             </Link>
-         </View>
-         </>
+                    <TouchableOpacity onPress={() => router.push('/')} disabled={loading}>
+                        <Text style={styles.linkText}>Já tenho uma conta</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </>
     );
 };
 
-
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#2B2727',
+        flexGrow: 1,
+        backgroundColor: '#1A1A1A',
         justifyContent: 'center',
-        padding: 35,
+        paddingHorizontal: 30,
+        paddingVertical: 40,
+    },
+    headerContainer: {
+        alignItems: 'center',
+        marginBottom: 40,
+        position: 'relative',
+        width: '100%',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 0,
+        top: 10,
     },
     title: {
-        fontSize: 48,
+        fontSize: 32,
         color: '#FFF',
-        textAlign: 'center',
-        marginBottom: 80,
-        fontWeight: '300',
+        fontWeight: 'bold',
     },
-    button: {
-        backgroundColor: '#1E1E1E',
-        padding: 15,
-        borderRadius: 8,
+    formContainer: {
+        width: '100%',
+        gap: 15,
+    },
+    actionsContainer: {
+        width: '100%',
+        marginTop: 30,
         alignItems: 'center',
-        marginTop: 25,
+        gap: 20,
     },
-    buttonText: {
-        color: '#888',
-        fontSize: 16,
-        fontWeight: 'bold',
+    registerButton: {
+        backgroundColor: '#A33E3E',
+        width: '100%',
     },
-    link: {
-        color: '#888',
-        textAlign: 'center',
-        marginTop: 20,
-        fontWeight: 'bold',
+    linkText: {
+        color: '#AAA',
+        fontSize: 14,
+        textDecorationLine: 'underline',
     }
 });
 

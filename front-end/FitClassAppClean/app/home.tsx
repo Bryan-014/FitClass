@@ -1,21 +1,19 @@
-import StyledButton from "@/src/components/StyledButton";
-import { removeToken } from "@/src/services/tokenService";
+import React, { useState, useCallback } from 'react';
 import {
-  Agendamento,
-  Usuario,
-  getMeuPerfil
-} from "@/src/services/usuarioService";
-import { Stack, router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
   StyleSheet,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
   Text,
   View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+  TouchableOpacity,
+  FlatList
+} from 'react-native';
+import { Stack, router, useFocusEffect } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getMeuPerfil, getMinhasProximasAulas, Usuario, Agendamento } from '@/src/services/usuarioService';
+import { removeToken } from '@/src/services/tokenService';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -29,17 +27,9 @@ const HomeScreen = () => {
         try {
           const perfilData = await getMeuPerfil();
           setUsuario(perfilData);
-
-          // A busca de aulas fica para quando o endpoint existir
-          // const [perfilData, aulasData] = await Promise.all([
-          //   getMeuPerfil(),
-          //   getMinhasProximasAulas(),
-          // ]);
-          // setUsuario(perfilData);
+          // const aulasData = await getMinhasProximasAulas();
           // setProximasAulas(aulasData);
-
         } catch (error) {
-          // Este bloco não deve mais ser ativado
           console.error("Erro ao carregar dados da home:", error);
           Alert.alert("Erro", "Não foi possível carregar seus dados.");
         } finally {
@@ -55,103 +45,145 @@ const HomeScreen = () => {
     router.replace("/");
   };
 
-  const renderAulaCard = ({ item }: { item: Agendamento }) => (
-    <View style={styles.classCard}>
-      <Text style={styles.cardTitle}>{item.aulaNome}</Text>
-      <Text style={styles.cardSubtitle}>
-        {item.horario} com {item.instrutorNome}
-      </Text>
-      <Text style={styles.cardStatus}>Status: {item.status}</Text>
+  const renderMinhaAulaCard = ({ item }: { item: Agendamento }) => (
+    <View style={styles.smallCard}>
+      <View>
+        <Text style={styles.smallCardTitle}>{item.aulaNome}</Text>
+        <Text style={styles.smallCardText}>{new Date(item.horario).toLocaleDateString('pt-BR')}</Text>
+        <Text style={styles.smallCardText}>{new Date(item.horario).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</Text>
+      </View>
+      <View style={[styles.statusBadge, { backgroundColor: '#A3E635' }]}>
+        <Text style={styles.statusBadgeText}>{item.status}</Text>
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "Início",
-          headerStyle: { backgroundColor: "#2B2727" },
-          headerTintColor: "#FFF",
-          headerTitleAlign: "center",
-          headerShadowVisible: false,
-          headerLeft: () => null,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
+
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.welcomeText}>
-          {loading
-            ? "Testando API..."
-            : `Bem-vindo(a), ${ usuario?.nome || "Usuário" }!`}
-        </Text>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerSubtext}>Bem-vindo(a) de volta,</Text>
+            <Text style={styles.headerText}>{loading ? "Carregando..." : usuario?.nome}</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push('./user/profile')}>
+            <Ionicons name="person-circle-outline" size={48} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.mainActionCard} onPress={() => router.push('/aulas/browse')}>
+          <MaterialCommunityIcons name="plus-circle" size={40} color="#FFF" />
+          <Text style={styles.mainActionText}>Agendar Nova Aula</Text>
+          <Text style={styles.mainActionSubtext}>Ver aulas disponíveis e garantir sua vaga.</Text>
+        </TouchableOpacity>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Resultado do Teste</Text>
-          {loading && <ActivityIndicator color="#FFF" size="large" />}
-          <Text style={styles.emptyText}>
-            Verifique o alerta que apareceu na tela e o console.
-          </Text>
+          <Text style={styles.sectionTitle}>Minhas Próximas Aulas</Text>
+          {loading ? (
+            <ActivityIndicator color="#FFF" style={{ alignSelf: 'center', marginTop: 10 }} />
+          ) : (
+            <FlatList
+              data={proximasAulas}
+              renderItem={renderMinhaAulaCard}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              ListEmptyComponent={<Text style={styles.emptyText}>Você ainda não agendou nenhuma aula.</Text>}
+              contentContainerStyle={{ paddingLeft: 20 }}
+            />
+          )}
         </View>
 
         {usuario?.role === "ADMIN" && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Painel Administrativo</Text>
-            <StyledButton onPress={() => router.push("/admin/dashboard")}>
-              Acessar Gerenciamento
-            </StyledButton>
-          </View>
+          <TouchableOpacity style={styles.adminButton} onPress={() => router.push("/admin/dashboard")}>
+            <Ionicons name="shield-checkmark-outline" size={24} color="#FFF" />
+            <Text style={styles.adminButtonText}>Painel do Administrador</Text>
+          </TouchableOpacity>
         )}
 
-        <StyledButton
-          variant="secondary"
-          onPress={handleLogout}
-          style={styles.logoutButton}
-        >
-          Sair (Logout)
-        </StyledButton>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={24} color="#FF6B6B" />
+          <Text style={styles.logoutButtonText}>Sair</Text>
+        </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
 };
 
+
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#2B2727" },
-  container: { padding: 20, paddingBottom: 40 },
-  welcomeText: {
-    fontSize: 28,
-    fontWeight: "300",
-    color: "#FFF",
-    textAlign: "center",
-    marginBottom: 30,
+  safeArea: { flex: 1, backgroundColor: '#1A1A1A' },
+  container: { paddingBottom: 40 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
-  section: { marginBottom: 30 },
+  headerSubtext: { color: '#AAA', fontSize: 16 },
+  headerText: { color: '#FFF', fontSize: 28, fontWeight: 'bold' },
+  mainActionCard: {
+    backgroundColor: '#A33E3E',
+    borderRadius: 16,
+    padding: 20,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5,
+  },
+  mainActionText: { color: '#FFF', fontSize: 22, fontWeight: 'bold', marginTop: 10 },
+  mainActionSubtext: { color: '#F0F0F0', fontSize: 14, marginTop: 5, textAlign: 'center' },
+  section: { marginTop: 40 },
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#FFF",
+    color: '#FFF',
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 15,
+    paddingHorizontal: 20,
   },
-  classCard: {
-    backgroundColor: "#4A4A4A",
-    borderRadius: 8,
+  smallCard: {
+    backgroundColor: '#2B2727',
+    borderRadius: 12,
     padding: 15,
-    marginBottom: 10,
+    marginRight: 15,
+    width: 160,
+    height: 140,
+    justifyContent: 'space-between',
   },
-  cardTitle: { fontSize: 18, fontWeight: "bold", color: "#FFF" },
-  cardSubtitle: { fontSize: 14, color: "#DDD", marginTop: 5 },
-  cardStatus: {
-    fontSize: 14,
-    color: "#A3E635",
-    fontWeight: "bold",
-    marginTop: 10,
+  smallCardTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
+  smallCardText: { color: '#DDD', fontSize: 12, marginTop: 4 },
+  statusBadge: {
+    borderRadius: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    alignSelf: 'flex-start',
   },
-  emptyText: {
-    color: "#888",
-    textAlign: "center",
-    fontStyle: "italic",
-    fontSize: 16,
+  statusBadgeText: { color: '#1A1A1A', fontSize: 10, fontWeight: 'bold' },
+  emptyText: { color: '#888', fontStyle: 'italic', paddingLeft: 20 },
+  adminButton: {
+    backgroundColor: '#4A4A4A',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 30,
   },
-  logoutButton: { marginTop: 20, backgroundColor: "#A33E3E" },
+  adminButtonText: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginLeft: 10 },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    marginHorizontal: 20,
+    marginTop: 15,
+  },
+  logoutButtonText: { color: '#FF6B6B', fontSize: 16, fontWeight: 'bold', marginLeft: 10 },
 });
 
 export default HomeScreen;

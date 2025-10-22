@@ -1,7 +1,33 @@
 import api from './api';
 
+export type Instrutor = {
+  id: number;
+  nome: string;
+  especialidade: string;
+};
+
 export type Aula = {
   id?: number;
+  nome: string;
+  descricao: string;
+  dataHora: string;
+  duracao: number;
+  capacidade: string;
+  limiteCancelamentoHoras: number;
+  instrutor: Instrutor;
+};
+
+export const getAulas = async (): Promise<Aula[]> => {
+  const response = await api.get<Aula[]>('/aulas');
+  return response.data;
+};
+
+export const getAulaById = async (id: number): Promise<Aula> => {
+  const response = await api.get<Aula>(`/aulas/${ id }`);
+  return response.data;
+};
+
+export type AulaCreationData = {
   nome: string;
   descricao: string;
   dataHora: string;
@@ -11,26 +37,16 @@ export type Aula = {
   instrutorId: number;
 };
 
-export const getAulas = async (): Promise<Aula[]> => {
-  const response = await api.get<Aula[]>('/aulas');
-  return response.data;
-};
-
-export const getAulaById = async (id: number): Promise<Aula> => {
-    const response = await api.get<Aula>(`/aulas/${id}`);
-    return response.data;
-};
-
-export const createAula = async (aulaData: Omit<Aula, 'id'>): Promise<Aula> => {
+export const createAula = async (aulaData: AulaCreationData): Promise<Aula> => {
   const response = await api.post<Aula>('/aulas', aulaData);
   return response.data;
 };
 
-export const updateAula = async (id: number, aulaData: Aula): Promise<Aula> => {
-    const response = await api.put<Aula>(`/aulas/${id}`, aulaData);
-    return response.data;
+export const updateAula = async (id: number, aulaData: AulaCreationData): Promise<Aula> => {
+  const response = await api.put<Aula>(`/aulas/${ id }`, aulaData);
+  return response.data;
 };
 
 export const deleteAula = async (id: number): Promise<void> => {
-    await api.delete(`/aulas/${id}`);
+  await api.delete(`/aulas/${ id }`);
 };

@@ -1,10 +1,11 @@
-import StyledButton from '@/src/components/StyledButton';
-import StyledInput from '@/src/components/StyledInput';
-import { deleteInstrutor, getInstrutorById, updateInstrutor } from '@/src/services/instrutorService';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Alert, ActivityIndicator, ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text } from 'react-native';
+import StyledInput from '@/src/components/StyledInput';
+import StyledButton from '@/src/components/StyledButton';
+import { getInstrutorById, updateInstrutor, deleteInstrutor } from '@/src/services/instrutorService';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 const DetalheInstrutorScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,8 +84,17 @@ const DetalheInstrutorScreen = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Stack.Screen options={{ title: 'Editar Instrutor' }} />
-            <ScrollView style={styles.container}>
+            <Stack.Screen options={{ headerShown: false }} />
+
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="white" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Editar Instrutor</Text>
+                <View style={{ width: 40 }} />
+            </View>
+
+            <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.label}>Nome do Instrutor</Text>
                 <StyledInput value={nome} onChangeText={setNome} editable={!isSaving} />
 
@@ -103,11 +113,26 @@ const DetalheInstrutorScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: '#2B2727' },
-    container: { flex: 1, padding: 20 },
+    safeArea: { flex: 1, backgroundColor: '#1A1A1A' },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+    },
+    backButton: { padding: 8 },
+    headerTitle: { color: '#FFF', fontSize: 22, fontWeight: 'bold' },
+    container: { padding: 20 },
     label: { color: '#FFF', fontSize: 16, marginBottom: 8, marginTop: 15, fontWeight: 'bold' },
-    actionButton: { marginTop: 30 },
-    deleteButton: { backgroundColor: '#A33E3E', marginTop: 10 },
+    actionButton: { 
+        marginTop: 30,
+        backgroundColor: '#A33E3E',
+    },
+    deleteButton: { 
+        backgroundColor: '#555',
+        marginTop: 10 
+    },
 });
 
 export default DetalheInstrutorScreen;

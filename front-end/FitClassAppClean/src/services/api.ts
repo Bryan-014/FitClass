@@ -11,7 +11,7 @@ api.interceptors.request.use(
   async (config) => {
     const token = await getToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${ token }`;
     }
     return config;
   },
@@ -28,7 +28,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       console.error('Erro da API:', error.response.status, error.response.data);
-      
+
       if (error.response.status === 401) {
         console.log('Token expirado ou inválido');
       }

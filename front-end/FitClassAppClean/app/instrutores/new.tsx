@@ -1,10 +1,11 @@
-import StyledButton from '@/src/components/StyledButton';
-import StyledInput from '@/src/components/StyledInput';
-import { createInstrutor } from '@/src/services/instrutorService';
-import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Alert, ActivityIndicator, ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { Stack, router } from 'expo-router';
+import StyledInput from '@/src/components/StyledInput';
+import StyledButton from '@/src/components/StyledButton';
+import { createInstrutor } from '@/src/services/instrutorService';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 const NovoInstrutorScreen = () => {
     const [nome, setNome] = useState('');
@@ -32,8 +33,17 @@ const NovoInstrutorScreen = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Stack.Screen options={{ title: 'Novo Instrutor' }} />
-            <ScrollView style={styles.container}>
+            <Stack.Screen options={{ headerShown: false }} />
+            
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="white" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Novo Instrutor</Text>
+                <View style={{ width: 40 }} />
+            </View>
+
+            <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.label}>Nome do Instrutor</Text>
                 <StyledInput 
                     value={nome} 
@@ -59,9 +69,17 @@ const NovoInstrutorScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: '#2B2727' },
+    safeArea: { flex: 1, backgroundColor: '#1A1A1A' },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+    },
+    backButton: { padding: 8 },
+    headerTitle: { color: '#FFF', fontSize: 22, fontWeight: 'bold' },
     container: { 
-        flex: 1, 
         padding: 20 
     },
     label: { 
@@ -73,6 +91,7 @@ const styles = StyleSheet.create({
     },
     saveButton: {
         marginTop: 30,
+        backgroundColor: '#A33E3E',
     }
 });
 

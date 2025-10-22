@@ -17,8 +17,8 @@ export const getInstrutorById = async (id: number): Promise<Instrutor> => {
 };
 
 export const createInstrutor = async (instrutorData: Omit<Instrutor, 'id'>): Promise<Instrutor> => {
-  const response = await api.post<Instrutor>('/instrutores', instrutorData);
-  return response.data;
+    const response = await api.post<Instrutor>('/instrutores', instrutorData);
+    return response.data;
 };
 
 export const updateInstrutor = async (id: number, instrutorData: Instrutor): Promise<Instrutor> => {
