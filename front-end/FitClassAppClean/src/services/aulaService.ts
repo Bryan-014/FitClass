@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export type Instrutor = {
   id: number;
@@ -18,12 +18,12 @@ export type Aula = {
 };
 
 export const getAulas = async (): Promise<Aula[]> => {
-  const response = await api.get<Aula[]>('/aulas');
+  const response = await api.get<Aula[]>("/aulas");
   return response.data;
 };
 
 export const getAulaById = async (id: number): Promise<Aula> => {
-  const response = await api.get<Aula>(`/aulas/${ id }`);
+  const response = await api.get<Aula>(`/aulas/${id}`);
   return response.data;
 };
 
@@ -38,15 +38,23 @@ export type AulaCreationData = {
 };
 
 export const createAula = async (aulaData: AulaCreationData): Promise<Aula> => {
-  const response = await api.post<Aula>('/aulas', aulaData);
+  const response = await api.post<Aula>("/aulas", aulaData);
   return response.data;
 };
 
-export const updateAula = async (id: number, aulaData: AulaCreationData): Promise<Aula> => {
-  const response = await api.put<Aula>(`/aulas/${ id }`, aulaData);
+export const updateAula = async (
+  id: number,
+  aulaData: AulaCreationData
+): Promise<Aula> => {
+  const response = await api.put<Aula>(`/aulas/${id}`, aulaData);
   return response.data;
 };
 
 export const deleteAula = async (id: number): Promise<void> => {
-  await api.delete(`/aulas/${ id }`);
+  await api.delete(`/aulas/${id}`);
+};
+
+export const getMinhasAulasInstrutor = async (): Promise<Aula[]> => {
+  const response = await api.get<Aula[]>("/aulas/instrutor/me");
+  return response.data;
 };

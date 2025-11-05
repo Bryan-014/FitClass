@@ -38,10 +38,13 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
+   /*  
     @Bean
     public static MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setDefaultRolePrefix("");
         return expressionHandler;
     }
+
+    */
 }

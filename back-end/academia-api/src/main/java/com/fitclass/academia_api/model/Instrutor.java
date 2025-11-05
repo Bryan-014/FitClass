@@ -5,21 +5,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity 
-@Table(name = "instrutores") 
+@Entity
+@Table(name = "instrutores")
 @Data
 @Getter
-@Setter 
+@Setter
 public class Instrutor {
 
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Id     
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String especialidade; 
-    
-}
+    private String especialidade;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
+}   

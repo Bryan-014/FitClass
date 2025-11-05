@@ -11,7 +11,6 @@ import com.fitclass.academia_api.model.Aula;
 import com.fitclass.academia_api.model.Instrutor;
 import com.fitclass.academia_api.repository.AulaRepository;
 import com.fitclass.academia_api.repository.InstrutorRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -64,7 +63,14 @@ public class AulaService {
         aula.setDuracao(aulaDetalhes.getDuracao());
         aula.setCapacidade(aulaDetalhes.getCapacidade());
         aula.setLimiteCancelamentoHoras(aulaDetalhes.getLimiteCancelamentoHoras());
-        
+
         return aulaRepository.save(aula);
+    }
+
+    public List<Aula> buscarAulasPorInstrutor(String login) {
+        Instrutor instrutor = instrutorRepository.findByUsuario_Login(login)
+                .orElseThrow(() -> new RuntimeException("Instrutor não encontrado para este login"));
+
+        return aulaRepository.findByInstrutorId(instrutor.getId());
     }
 }

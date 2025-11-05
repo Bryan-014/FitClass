@@ -17,6 +17,9 @@ import com.fitclass.academia_api.DTO.AulaRequestDTO;
 import com.fitclass.academia_api.model.Aula;
 import com.fitclass.academia_api.service.AulaService;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+
 @RestController
 @RequestMapping("/api/aulas")
 public class AulaController {
@@ -67,5 +70,11 @@ public class AulaController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
         }
+    }
+
+    @GetMapping("/instrutor/me")
+    public ResponseEntity<List<Aula>> getMinhasAulasInstrutor(@AuthenticationPrincipal UserDetails userDetails) {
+        List<Aula> aulas = aulaService.buscarAulasPorInstrutor(userDetails.getUsername());
+        return ResponseEntity.ok(aulas);
     }
 }
