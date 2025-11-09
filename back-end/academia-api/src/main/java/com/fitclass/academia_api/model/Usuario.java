@@ -22,13 +22,14 @@ public class Usuario implements UserDetails {
     @Column(unique = true)
     private String login;
     private String senha;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == null) {
-            return List.of(new SimpleGrantedAuthority("ALUNO"));
+            return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
         }
         return List.of(new SimpleGrantedAuthority(this.role.name()));
     }

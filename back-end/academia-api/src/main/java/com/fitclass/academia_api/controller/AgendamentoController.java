@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fitclass.academia_api.DTO.PresencaRequestDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/agendamentos")
@@ -36,16 +37,24 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentos);
     }
 
-    static class AgendamentoRequest {
-        private Long aulaId;
+    @GetMapping("/{id}")
+    public ResponseEntity<Agendamento> getAgendamentoPorId(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        public Long getAulaId() {
-            return aulaId;
+        Optional<Agendamento> agendamentoOpt = service.buscarPorId(id);
+
+        if (agendamentoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        public void setAulaId(Long aulaId) {
-            this.aulaId = aulaId;
+        Agendamento agendamento = agendamentoOpt.get();
+
+        if (!agendamento.getAluno().getLogin().equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        return ResponseEntity.ok(agendamento);
     }
 
     @GetMapping("/aula/{aulaId}")
@@ -77,6 +86,18 @@ public class AgendamentoController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    static class AgendamentoRequest {
+        private Long aulaId;
+
+        public Long getAulaId() {
+            return aulaId;
+        }
+
+        public void setAulaId(Long aulaId) {
+            this.aulaId = aulaId;
         }
     }
 }

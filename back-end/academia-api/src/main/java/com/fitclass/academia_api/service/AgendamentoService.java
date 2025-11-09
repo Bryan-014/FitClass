@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,10 @@ public class AgendamentoService {
         return agendamentoRepository.findByAluno_Id(aluno.getId());
     }
 
+    public Optional<Agendamento> buscarPorId(Long id) {
+        return agendamentoRepository.findById(id);
+    }
+
     public List<Agendamento> buscarPorAulaId(Long aulaId) {
         System.out.println("--- [LOG DE SERVIÇO: AgendamentoService] ---");
         System.out.println("Método 'buscarPorAulaId' foi chamado.");
@@ -71,7 +76,7 @@ public class AgendamentoService {
             }
         }
         System.out.println("---------------------------------------------");
-        return agendamentoRepository.findByAula_Id(aulaId);
+        return agendamentosEncontrados;
     }
 
     public Agendamento marcarPresenca(Long agendamentoId, boolean compareceu) {
@@ -99,7 +104,5 @@ public class AgendamentoService {
         }
 
         agendamentoRepository.delete(agendamento);
-
     }
-
 }

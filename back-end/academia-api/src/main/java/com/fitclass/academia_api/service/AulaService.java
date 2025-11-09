@@ -71,6 +71,6 @@ public class AulaService {
         Instrutor instrutor = instrutorRepository.findByUsuario_Login(login)
                 .orElseThrow(() -> new RuntimeException("Instrutor não encontrado para este login"));
 
-        return aulaRepository.findByInstrutorId(instrutor.getId());
+        return aulaRepository.findByInstrutor_Id(instrutor.getId());
     }
 }

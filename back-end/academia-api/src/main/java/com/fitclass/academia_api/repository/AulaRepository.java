@@ -5,5 +5,5 @@ import java.util.List;
 import com.fitclass.academia_api.model.Aula;
 
 public interface AulaRepository extends JpaRepository<Aula, Long> {
-    List<Aula> findByInstrutorId(Long instrutorId);
+    List<Aula> findByInstrutor_Id(Long instrutorId);
 }
